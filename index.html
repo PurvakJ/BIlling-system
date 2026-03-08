@@ -1,0 +1,2121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Billing System - Full Screen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .navbar {
+            background: #1a237e;
+            color: white;
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-item {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: #283593;
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f0f2f5;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-title {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1a237e;
+            margin: 10px 0;
+        }
+
+        .stat-change {
+            font-size: 0.9rem;
+            color: #4caf50;
+        }
+
+        /* Charts */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: 400px;
+            position: relative;
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .chart-container {
+            height: calc(100% - 40px);
+            position: relative;
+        }
+
+        /* Tables */
+        .section-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #1a237e;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #283593;
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #da190b;
+        }
+
+        .btn-warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #e68a00;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        /* Forms */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .modal-full {
+            max-width: 90%;
+            width: 1200px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #1a237e;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* Cart */
+        .cart-items {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 3fr 1fr 1fr 1fr auto;
+            gap: 10px;
+            padding: 10px;
+            background: #f9f9f9;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            align-items: center;
+        }
+
+        .cart-total {
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #ddd;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px 5px 0 0;
+            background: #f5f5f5;
+        }
+
+        .tab.active {
+            background: #1a237e;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Bill Print Modal - Full Screen */
+        #bill-print-modal .modal-content {
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .bill-print {
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .bill-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px dashed #333;
+        }
+
+        .bill-header h2 {
+            color: #1a237e;
+            margin-bottom: 5px;
+        }
+
+        .bill-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+
+        .bill-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+
+        .bill-table th {
+            background: #f0f0f0;
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .bill-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .bill-summary {
+            text-align: right;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 2px dashed #333;
+        }
+
+        .bill-footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 11px;
+            color: #666;
+        }
+
+        /* Print Styles */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            
+            body * {
+                visibility: hidden;
+            }
+            
+            #bill-print-modal,
+            #bill-print-modal * {
+                visibility: visible;
+            }
+            
+            #bill-print-modal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background: white;
+                overflow: visible;
+            }
+            
+            #bill-print-modal .modal-content {
+                box-shadow: none;
+                margin: 0;
+                max-width: 100%;
+                max-height: 100%;
+                overflow: visible;
+                padding: 10mm;
+            }
+            
+            .bill-print {
+                padding: 0;
+            }
+        }
+
+        .print-only {
+            display: none;
+        }
+
+        .error {
+            color: #f44336;
+            padding: 10px;
+            background: #ffebee;
+            border-radius: 5px;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1a237e;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #283593;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-menu {
+                flex-direction: column;
+                width: 100%;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                background: #1a237e;
+                padding: 10px;
+                display: none;
+            }
+            
+            .nav-menu.show {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="navbar">
+            <div class="nav-brand">
+                <span>📊 Advanced Billing System</span>
+            </div>
+            <div class="nav-menu">
+                <a class="nav-item active" onclick="showSection('dashboard')">Dashboard</a>
+                <a class="nav-item" onclick="showSection('billing')">Billing</a>
+                <a class="nav-item" onclick="showSection('products')">Products</a>
+                <a class="nav-item" onclick="showSection('bills')">Bills</a>
+                <a class="nav-item" onclick="showSection('customers')">Customers</a>
+                <a class="nav-item" onclick="showSection('expenses')">Expenses</a>
+                <a class="nav-item" onclick="showSection('reports')">Reports</a>
+                <a class="nav-item" onclick="showSection('settings')">Settings</a>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="container">
+                <!-- Dashboard Section -->
+                <div id="dashboard-section" class="section">
+                    <div class="dashboard-grid" id="stats-container">
+                        <!-- Stats will be loaded here -->
+                    </div>
+
+                    <div class="charts-row">
+                        <div class="chart-card">
+                            <div class="chart-title">Sales Analytics</div>
+                            <div class="chart-container">
+                                <canvas id="salesChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">Top Products</div>
+                            <div class="chart-container">
+                                <canvas id="productsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-title">Recent Bills</div>
+                            <button class="btn btn-primary" onclick="showSection('bills')">View All</button>
+                        </div>
+                        <table id="recent-bills-table">
+                            <thead>
+                                <tr>
+                                    <th>Bill No.</th>
+                                    <th>Customer</th>
+                                    <th>Total</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-title">Low Stock Alert</div>
+                        </div>
+                        <table id="low-stock-table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Current Stock</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Billing Section -->
+                <div id="billing-section" class="section" style="display:none;">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-title">Create New Bill</div>
+                        </div>
+
+                        <div class="tabs">
+                            <div class="tab active" onclick="switchBillingTab('new')">New Bill</div>
+                            <div class="tab" onclick="switchBillingTab('search')">Search Bill</div>
+                        </div>
+
+                        <div id="new-bill-tab" class="tab-content active">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Customer Name</label>
+                                    <input type="text" id="customer-name" placeholder="Enter customer name">
+                                </div>
+                                <div class="form-group">
+                                    <label>Phone Number</label>
+                                    <input type="tel" id="customer-phone" placeholder="Enter phone number">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" id="customer-email" placeholder="Enter email">
+                                </div>
+                                <div class="form-group">
+                                    <label>GST Number</label>
+                                    <input type="text" id="customer-gst" placeholder="Enter GST number">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Search Products</label>
+                                <input type="text" id="product-search" placeholder="Type to search products..." onkeyup="searchProducts()">
+                            </div>
+
+                            <div id="product-search-results" style="max-height:200px; overflow-y:auto; margin-bottom:15px;"></div>
+
+                            <h3>Cart</h3>
+                            <div id="cart-items" class="cart-items"></div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Discount (₹)</label>
+                                    <input type="number" id="discount" value="0" min="0" onchange="updateCartTotal()">
+                                </div>
+                                <div class="form-group">
+                                    <label>Payment Method</label>
+                                    <select id="payment-method">
+                                        <option value="Cash">Cash</option>
+                                        <option value="Card">Card</option>
+                                        <option value="UPI">UPI</option>
+                                        <option value="Bank Transfer">Bank Transfer</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Notes</label>
+                                <textarea id="bill-notes" rows="3"></textarea>
+                            </div>
+
+                            <div class="cart-total">
+                                Subtotal: ₹<span id="subtotal">0.00</span><br>
+                                GST: ₹<span id="gst">0.00</span><br>
+                                Discount: ₹<span id="discount-amount">0.00</span><br>
+                                <strong>Total: ₹<span id="total">0.00</span></strong>
+                            </div>
+
+                            <div style="display: flex; gap:10px; justify-content: flex-end;">
+                                <button class="btn btn-danger" onclick="clearCart()">Clear Cart</button>
+                                <button class="btn btn-success" onclick="createBill()">Create Bill</button>
+                            </div>
+                        </div>
+
+                        <div id="search-bill-tab" class="tab-content">
+                            <div class="form-group">
+                                <label>Enter Bill Number</label>
+                                <input type="text" id="search-bill-number" placeholder="e.g., INV-001001">
+                            </div>
+                            <button class="btn btn-primary" onclick="searchBill()">Search Bill</button>
+                            
+                            <div id="search-result" style="margin-top:20px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Section -->
+                <div id="products-section" class="section" style="display:none;">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-title">Product Management</div>
+                            <button class="btn btn-success" onclick="showAddProductModal()">+ Add Product</button>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="text" id="product-filter" placeholder="Search products..." onkeyup="filterProducts()">
+                        </div>
+
+                        <table id="products-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>GST</th>
+                                    <th>HSN</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Bills Section -->
+                <div id="bills-section" class="section" style="display:none;">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-title">Bill History</div>
+                            <div>
+                                <input type="date" id="bill-start-date">
+                                <input type="date" id="bill-end-date">
+                                <button class="btn btn-primary" onclick="loadBills()">Filter</button>
+                            </div>
+                        </div>
+
+                        <table id="bills-table">
+                            <thead>
+                                <tr>
+                                    <th>Bill No.</th>
+                                    <th>Customer</th>
+                                    <th>Phone</th>
+                                    <th>Total</th>
+                                    <th>Payment</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Customers Section -->
+                <div id="customers-section" class="section" style="display:none;">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-title">Customer Management</div>
+                        </div>
+
+                        <table id="customers-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Email</th>
+                                    <th>GST</th>
+                                    <th>Total Purchases</th>
+                                    <th>Last Purchase</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Expenses Section -->
+                <div id="expenses-section" class="section" style="display:none;">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-title">Expense Management</div>
+                            <button class="btn btn-success" onclick="showAddExpenseModal()">+ Add Expense</button>
+                        </div>
+
+                        <table id="expenses-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Category</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Payment Method</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Reports Section -->
+                <div id="reports-section" class="section" style="display:none;">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-title">Sales Reports</div>
+                        </div>
+
+                        <div class="tabs">
+                            <div class="tab active" onclick="switchReportTab('daily')">Daily</div>
+                            <div class="tab" onclick="switchReportTab('monthly')">Monthly</div>
+                            <div class="tab" onclick="switchReportTab('yearly')">Yearly</div>
+                            <div class="tab" onclick="switchReportTab('custom')">Custom Range</div>
+                        </div>
+
+                        <div id="daily-report" class="tab-content active">
+                            <div style="height: 400px;">
+                                <canvas id="dailyChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div id="monthly-report" class="tab-content">
+                            <div style="height: 400px;">
+                                <canvas id="monthlyChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div id="yearly-report" class="tab-content">
+                            <div style="height: 400px;">
+                                <canvas id="yearlyChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div id="custom-report" class="tab-content">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Start Date</label>
+                                    <input type="date" id="report-start">
+                                </div>
+                                <div class="form-group">
+                                    <label>End Date</label>
+                                    <input type="date" id="report-end">
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" onclick="generateCustomReport()">Generate Report</button>
+                            <div style="height: 400px; margin-top:20px;">
+                                <canvas id="customChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div id="settings-section" class="section" style="display:none;">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-title">Shop Settings</div>
+                        </div>
+
+                        <form id="settings-form">
+                            <div class="form-group">
+                                <label>Shop Name</label>
+                                <input type="text" id="shop_name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Shop Address</label>
+                                <textarea id="shop_address" rows="3" required></textarea>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Phone Number</label>
+                                    <input type="text" id="shop_phone" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" id="shop_email" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>GST Number</label>
+                                <input type="text" id="shop_gst" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Invoice Prefix</label>
+                                    <input type="text" id="invoice_prefix" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Next Invoice Number</label>
+                                    <input type="number" id="next_invoice_number" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Default Tax Rate (%)</label>
+                                    <input type="number" id="tax_rate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Low Stock Threshold</label>
+                                    <input type="number" id="low_stock_threshold" required>
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn btn-success" onclick="saveSettings()">Save Settings</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="product-modal-title">Add Product</h2>
+            <form id="product-form">
+                <input type="hidden" id="product-id">
+                
+                <div class="form-group">
+                    <label>Product Name *</label>
+                    <input type="text" id="product-name" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Price *</label>
+                        <input type="number" id="product-price" required min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity *</label>
+                        <input type="number" id="product-quantity" required min="0">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Category</label>
+                        <input type="text" id="product-category">
+                    </div>
+                    <div class="form-group">
+                        <label>GST Rate (%)</label>
+                        <input type="number" id="product-gst" value="0" min="0" step="0.01">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>HSN Code</label>
+                    <input type="text" id="product-hsn">
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="product-description" rows="3"></textarea>
+                </div>
+
+                <div style="display: flex; gap:10px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-danger" onclick="closeProductModal()">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Expense Modal -->
+    <div id="expense-modal" class="modal">
+        <div class="modal-content">
+            <h2>Add Expense</h2>
+            <form id="expense-form">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="expense-date" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="expense-category" required>
+                        <option value="Rent">Rent</option>
+                        <option value="Electricity">Electricity</option>
+                        <option value="Salary">Salary</option>
+                        <option value="Inventory">Inventory</option>
+                        <option value="Maintenance">Maintenance</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" id="expense-description" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Amount</label>
+                    <input type="number" id="expense-amount" required min="0" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <select id="expense-payment">
+                        <option value="Cash">Cash</option>
+                        <option value="Card">Card</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="expense-notes" rows="3"></textarea>
+                </div>
+
+                <div style="display: flex; gap:10px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-danger" onclick="closeExpenseModal()">Cancel</button>
+                    <button type="submit" class="btn btn-success">Add Expense</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bill Print Modal -->
+    <div id="bill-print-modal" class="modal">
+        <div class="modal-content">
+            <div id="bill-print-content"></div>
+            <div style="display: flex; gap:10px; justify-content: flex-end; margin-top:20px;" class="no-print">
+                <button class="btn btn-primary" onclick="printBill()">Print</button>
+                <button class="btn btn-danger" onclick="closeBillPrint()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const API = "https://script.google.com/macros/s/AKfycbzSklBbDieSosJKKvTkI3xFUXmlwGw7v-wB3zBKZqpSlDBrKzZjKhg-haNK5eWI96zY5w/exec"; // Replace with your deployed script URL
+        let products = [];
+        let cart = [];
+        let currentBill = null;
+        let charts = {};
+
+        // ==================== API FUNCTIONS ====================
+
+        async function api(data) {
+            try {
+                const res = await fetch(API, {
+                    method: "POST",
+                    body: JSON.stringify(data)
+                });
+                return await res.json();
+            } catch (error) {
+                console.error("API Error:", error);
+                alert("Network error. Please check your connection.");
+                return { success: false };
+            }
+        }
+
+        // ==================== NAVIGATION ====================
+
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            document.getElementById(`${section}-section`).style.display = 'block';
+            
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Load section data
+            switch(section) {
+                case 'dashboard':
+                    loadDashboard();
+                    break;
+                case 'products':
+                    loadProducts();
+                    break;
+                case 'bills':
+                    loadBills();
+                    break;
+                case 'customers':
+                    loadCustomers();
+                    break;
+                case 'expenses':
+                    loadExpenses();
+                    break;
+                case 'settings':
+                    loadSettings();
+                    break;
+            }
+        }
+
+        // ==================== DASHBOARD FUNCTIONS ====================
+
+        async function loadDashboard() {
+            const stats = await api({ action: "getDashboardStats" });
+            if (stats.success) {
+                displayStats(stats.data);
+            }
+
+            const salesData = await api({ action: "getSalesAnalytics", period: "month" });
+            if (salesData.success) {
+                createSalesChart(salesData.data);
+            }
+
+            const topProducts = await api({ action: "getTopProducts", limit: 5 });
+            if (topProducts.success) {
+                createProductsChart(topProducts.data);
+            }
+
+            const bills = await api({ action: "getBills" });
+            if (bills.success) {
+                displayRecentBills(bills.data.slice(0, 5));
+            }
+
+            const lowStock = await api({ action: "getLowStockProducts", threshold: 10 });
+            if (lowStock.success) {
+                displayLowStock(lowStock.data);
+            }
+        }
+
+        function displayStats(stats) {
+            const container = document.getElementById('stats-container');
+            container.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-title">Today's Sales</div>
+                    <div class="stat-value">₹${stats.today_sales ? stats.today_sales.toFixed(2) : '0.00'}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Month Sales</div>
+                    <div class="stat-value">₹${stats.month_sales ? stats.month_sales.toFixed(2) : '0.00'}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Total Sales</div>
+                    <div class="stat-value">₹${stats.total_sales ? stats.total_sales.toFixed(2) : '0.00'}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Profit</div>
+                    <div class="stat-value">₹${stats.profit ? stats.profit.toFixed(2) : '0.00'}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Products</div>
+                    <div class="stat-value">${stats.total_products || 0}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Low Stock</div>
+                    <div class="stat-value">${stats.low_stock || 0}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Total Bills</div>
+                    <div class="stat-value">${stats.total_bills || 0}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Expenses</div>
+                    <div class="stat-value">₹${stats.total_expenses ? stats.total_expenses.toFixed(2) : '0.00'}</div>
+                </div>
+            `;
+        }
+
+        function createSalesChart(data) {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            if (charts.sales) charts.sales.destroy();
+            
+            charts.sales = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: 'Sales (₹)',
+                        data: data.map(d => d.amount),
+                        borderColor: '#1a237e',
+                        backgroundColor: 'rgba(26, 35, 126, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '₹' + value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createProductsChart(data) {
+            const ctx = document.getElementById('productsChart').getContext('2d');
+            if (charts.products) charts.products.destroy();
+            
+            charts.products = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.map(d => d.name),
+                    datasets: [{
+                        data: data.map(d => d.revenue),
+                        backgroundColor: [
+                            '#1a237e',
+                            '#283593',
+                            '#303f9f',
+                            '#3949ab',
+                            '#3f51b5'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function displayRecentBills(bills) {
+            const tbody = document.querySelector('#recent-bills-table tbody');
+            tbody.innerHTML = bills.map(bill => `
+                <tr>
+                    <td>${bill.bill_number}</td>
+                    <td>${bill.customer_name}</td>
+                    <td>₹${bill.total ? bill.total.toFixed(2) : '0.00'}</td>
+                    <td>${bill.date ? new Date(bill.date).toLocaleDateString() : '-'}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="viewBill('${bill.id}')">View</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function displayLowStock(products) {
+            const tbody = document.querySelector('#low-stock-table tbody');
+            tbody.innerHTML = products.map(p => `
+                <tr>
+                    <td>${p.name}</td>
+                    <td>${p.quantity}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editProduct('${p.id}')">Update Stock</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // ==================== BILLING FUNCTIONS ====================
+
+        async function searchProducts() {
+            const searchTerm = document.getElementById('product-search').value.toLowerCase();
+            const results = products.filter(p => 
+                p.name.toLowerCase().includes(searchTerm) || 
+                (p.hsn_code && p.hsn_code.toLowerCase().includes(searchTerm))
+            );
+
+            const resultsDiv = document.getElementById('product-search-results');
+            resultsDiv.innerHTML = results.map(p => `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:5px; border-bottom:1px solid #eee;">
+                    <span>${p.name} - ₹${p.price} (Stock: ${p.quantity})</span>
+                    <button class="btn btn-primary btn-sm" onclick="addToCart('${p.id}')" ${p.quantity <= 0 ? 'disabled' : ''}>
+                        Add
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const existingItem = cart.find(item => item.productId === productId);
+            
+            if (existingItem) {
+                if (existingItem.qty < product.quantity) {
+                    existingItem.qty++;
+                } else {
+                    alert('Not enough stock!');
+                    return;
+                }
+            } else {
+                if (product.quantity > 0) {
+                    cart.push({
+                        productId: product.id,
+                        name: product.name,
+                        price: product.price,
+                        gst_rate: product.gst_rate || 0,
+                        hsn_code: product.hsn_code || '',
+                        qty: 1
+                    });
+                } else {
+                    alert('Out of stock!');
+                    return;
+                }
+            }
+
+            renderCart();
+            document.getElementById('product-search').value = '';
+            document.getElementById('product-search-results').innerHTML = '';
+        }
+
+        function renderCart() {
+            const cartDiv = document.getElementById('cart-items');
+            cartDiv.innerHTML = cart.map((item, index) => `
+                <div class="cart-item">
+                    <span>${item.name}</span>
+                    <span>₹${item.price}</span>
+                    <span>
+                        <input type="number" value="${item.qty}" min="1" max="${getProductStock(item.productId)}" 
+                               onchange="updateCartItemQty(${index}, this.value)" style="width:60px;">
+                    </span>
+                    <span>₹${(item.price * item.qty).toFixed(2)}</span>
+                    <button class="btn btn-danger btn-sm" onclick="removeFromCart(${index})">×</button>
+                </div>
+            `).join('');
+
+            updateCartTotal();
+        }
+
+        function getProductStock(productId) {
+            const product = products.find(p => p.id === productId);
+            return product ? product.quantity : 0;
+        }
+
+        function updateCartItemQty(index, qty) {
+            qty = parseInt(qty);
+            if (qty <= 0) {
+                removeFromCart(index);
+                return;
+            }
+
+            const product = products.find(p => p.id === cart[index].productId);
+            if (qty > product.quantity) {
+                alert('Not enough stock!');
+                qty = product.quantity;
+            }
+
+            cart[index].qty = qty;
+            renderCart();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            renderCart();
+        }
+
+        function clearCart() {
+            cart = [];
+            renderCart();
+        }
+
+        function updateCartTotal() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const gst = cart.reduce((sum, item) => {
+                const gstAmount = (item.price * item.qty * (item.gst_rate || 0)) / 100;
+                return sum + gstAmount;
+            }, 0);
+            const discount = parseFloat(document.getElementById('discount').value) || 0;
+            const total = subtotal + gst - discount;
+
+            document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+            document.getElementById('gst').textContent = gst.toFixed(2);
+            document.getElementById('discount-amount').textContent = discount.toFixed(2);
+            document.getElementById('total').textContent = total.toFixed(2);
+        }
+
+        async function createBill() {
+            if (cart.length === 0) {
+                alert('Cart is empty!');
+                return;
+            }
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const gst_total = cart.reduce((sum, item) => {
+                const gstAmount = (item.price * item.qty * (item.gst_rate || 0)) / 100;
+                return sum + gstAmount;
+            }, 0);
+            const discount = parseFloat(document.getElementById('discount').value) || 0;
+            const total = subtotal + gst_total - discount;
+
+            const billData = {
+                action: "createBill",
+                customer_name: document.getElementById('customer-name').value || "Walk-in Customer",
+                customer_phone: document.getElementById('customer-phone').value,
+                customer_email: document.getElementById('customer-email').value,
+                customer_gst: document.getElementById('customer-gst').value,
+                items: cart.map(item => ({
+                    ...item,
+                    subtotal: item.price * item.qty,
+                    gst_amount: (item.price * item.qty * (item.gst_rate || 0)) / 100
+                })),
+                subtotal: subtotal,
+                gst_total: gst_total,
+                discount: discount,
+                total: total,
+                payment_method: document.getElementById('payment-method').value,
+                notes: document.getElementById('bill-notes').value
+            };
+
+            const result = await api(billData);
+            
+            if (result.success) {
+                alert(`Bill created successfully!\nBill Number: ${result.billNumber}`);
+                
+                // Show print preview with full bill data
+                const billWithDetails = {
+                    ...billData,
+                    bill_number: result.billNumber,
+                    date: new Date().toISOString(),
+                    id: result.billId
+                };
+                showBillPrint(billWithDetails);
+                
+                // Clear cart and form
+                clearCart();
+                document.getElementById('customer-name').value = '';
+                document.getElementById('customer-phone').value = '';
+                document.getElementById('customer-email').value = '';
+                document.getElementById('customer-gst').value = '';
+                document.getElementById('discount').value = '0';
+                document.getElementById('bill-notes').value = '';
+                
+                // Refresh data
+                loadProducts();
+                loadDashboard();
+            } else {
+                alert('Error creating bill: ' + (result.error || 'Unknown error'));
+            }
+        }
+
+        function switchBillingTab(tab) {
+            document.querySelectorAll('#billing-section .tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('#billing-section .tab-content').forEach(c => c.classList.remove('active'));
+            
+            if (tab === 'new') {
+                document.querySelector('#billing-section .tab').classList.add('active');
+                document.getElementById('new-bill-tab').classList.add('active');
+            } else {
+                document.querySelectorAll('#billing-section .tab')[1].classList.add('active');
+                document.getElementById('search-bill-tab').classList.add('active');
+            }
+        }
+
+        async function searchBill() {
+            const billNumber = document.getElementById('search-bill-number').value;
+            if (!billNumber) {
+                alert('Please enter bill number');
+                return;
+            }
+
+            const result = await api({ 
+                action: "getBillByNumber", 
+                billNumber: billNumber 
+            });
+
+            const resultDiv = document.getElementById('search-result');
+            if (result.success) {
+                const bill = result.bill;
+                resultDiv.innerHTML = `
+                    <div class="section-card">
+                        <h3>Bill Details</h3>
+                        <p><strong>Bill No:</strong> ${bill.bill_number}</p>
+                        <p><strong>Customer:</strong> ${bill.customer_name}</p>
+                        <p><strong>Date:</strong> ${bill.date ? new Date(bill.date).toLocaleString() : '-'}</p>
+                        <p><strong>Total:</strong> ₹${bill.total ? bill.total.toFixed(2) : '0.00'}</p>
+                        <button class="btn btn-primary" onclick="viewBill('${bill.id}')">View Full Bill</button>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = '<p class="error">Bill not found</p>';
+            }
+        }
+
+        // ==================== PRODUCT FUNCTIONS ====================
+
+        async function loadProducts() {
+            const result = await api({ action: "getProducts" });
+            if (result.success) {
+                products = result.data;
+                displayProducts(products);
+            }
+        }
+
+        function displayProducts(products) {
+            const tbody = document.querySelector('#products-table tbody');
+            tbody.innerHTML = products.map(p => `
+                <tr>
+                    <td>${p.name}</td>
+                    <td>${p.category || '-'}</td>
+                    <td>₹${p.price ? p.price.toFixed(2) : '0.00'}</td>
+                    <td>${p.quantity || 0}</td>
+                    <td>${p.gst_rate || 0}%</td>
+                    <td>${p.hsn_code || '-'}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="editProduct('${p.id}')">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterProducts() {
+            const filter = document.getElementById('product-filter').value.toLowerCase();
+            const filtered = products.filter(p => 
+                p.name.toLowerCase().includes(filter) || 
+                (p.category && p.category.toLowerCase().includes(filter))
+            );
+            displayProducts(filtered);
+        }
+
+        function showAddProductModal() {
+            document.getElementById('product-modal-title').textContent = 'Add Product';
+            document.getElementById('product-form').reset();
+            document.getElementById('product-id').value = '';
+            document.getElementById('product-modal').style.display = 'block';
+        }
+
+        function editProduct(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+
+            document.getElementById('product-modal-title').textContent = 'Edit Product';
+            document.getElementById('product-id').value = product.id;
+            document.getElementById('product-name').value = product.name;
+            document.getElementById('product-price').value = product.price;
+            document.getElementById('product-quantity').value = product.quantity;
+            document.getElementById('product-category').value = product.category || '';
+            document.getElementById('product-gst').value = product.gst_rate || 0;
+            document.getElementById('product-hsn').value = product.hsn_code || '';
+            document.getElementById('product-description').value = product.description || '';
+            
+            document.getElementById('product-modal').style.display = 'block';
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').style.display = 'none';
+        }
+
+        document.getElementById('product-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const productData = {
+                name: document.getElementById('product-name').value,
+                price: parseFloat(document.getElementById('product-price').value),
+                quantity: parseInt(document.getElementById('product-quantity').value),
+                category: document.getElementById('product-category').value,
+                gst_rate: parseFloat(document.getElementById('product-gst').value) || 0,
+                hsn_code: document.getElementById('product-hsn').value,
+                description: document.getElementById('product-description').value
+            };
+
+            const id = document.getElementById('product-id').value;
+            let result;
+
+            if (id) {
+                productData.id = id;
+                productData.action = "updateProduct";
+                result = await api(productData);
+            } else {
+                productData.action = "addProduct";
+                result = await api(productData);
+            }
+
+            if (result.success) {
+                alert(`Product ${id ? 'updated' : 'added'} successfully!`);
+                closeProductModal();
+                loadProducts();
+                loadDashboard();
+            } else {
+                alert('Error saving product');
+            }
+        });
+
+        async function deleteProduct(id) {
+            if (!confirm('Are you sure you want to delete this product?')) return;
+
+            const result = await api({
+                action: "deleteProduct",
+                id: id
+            });
+
+            if (result.success) {
+                alert('Product deleted successfully!');
+                loadProducts();
+                loadDashboard();
+            } else {
+                alert('Error deleting product');
+            }
+        }
+
+        // ==================== BILLS FUNCTIONS ====================
+
+        async function loadBills() {
+            const startDate = document.getElementById('bill-start-date')?.value;
+            const endDate = document.getElementById('bill-end-date')?.value;
+
+            const result = await api({ 
+                action: "getBills",
+                startDate: startDate,
+                endDate: endDate
+            });
+
+            if (result.success) {
+                displayBills(result.data);
+            }
+        }
+
+        function displayBills(bills) {
+            const tbody = document.querySelector('#bills-table tbody');
+            tbody.innerHTML = bills.map(bill => `
+                <tr>
+                    <td>${bill.bill_number}</td>
+                    <td>${bill.customer_name}</td>
+                    <td>${bill.customer_phone || '-'}</td>
+                    <td>₹${bill.total ? bill.total.toFixed(2) : '0.00'}</td>
+                    <td>${bill.payment_method}</td>
+                    <td>${bill.date ? new Date(bill.date).toLocaleString() : '-'}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="viewBill('${bill.id}')">View</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteBill('${bill.id}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function viewBill(billId) {
+            const result = await api({ action: "getBill", billId: billId });
+            if (result.success) {
+                showBillPrint(result.bill);
+            }
+        }
+
+        async function deleteBill(id) {
+            if (!confirm('Are you sure you want to delete this bill?')) return;
+
+            const result = await api({
+                action: "deleteBill",
+                billId: id
+            });
+
+            if (result.success) {
+                alert('Bill deleted successfully!');
+                loadBills();
+                loadDashboard();
+            } else {
+                alert('Error deleting bill');
+            }
+        }
+
+        // ==================== CUSTOMER FUNCTIONS ====================
+
+        async function loadCustomers() {
+            const result = await api({ action: "getCustomers" });
+            if (result.success) {
+                displayCustomers(result.data);
+            }
+        }
+
+        function displayCustomers(customers) {
+            const tbody = document.querySelector('#customers-table tbody');
+            tbody.innerHTML = customers.map(c => `
+                <tr>
+                    <td>${c.name}</td>
+                    <td>${c.phone || '-'}</td>
+                    <td>${c.email || '-'}</td>
+                    <td>${c.gst_number || '-'}</td>
+                    <td>${c.total_purchases || 0}</td>
+                    <td>${c.last_purchase_date ? new Date(c.last_purchase_date).toLocaleDateString() : '-'}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="viewCustomerBills('${c.phone}')">View Bills</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function viewCustomerBills(phone) {
+            const result = await api({ action: "getCustomerBills", phone: phone });
+            if (result.success && result.data.length > 0) {
+                alert(`Customer has ${result.data.length} bills`);
+            } else {
+                alert('No bills found for this customer');
+            }
+        }
+
+        // ==================== EXPENSE FUNCTIONS ====================
+
+        function showAddExpenseModal() {
+            document.getElementById('expense-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('expense-modal').style.display = 'block';
+        }
+
+        function closeExpenseModal() {
+            document.getElementById('expense-modal').style.display = 'none';
+        }
+
+        document.getElementById('expense-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const expenseData = {
+                action: "addExpense",
+                date: document.getElementById('expense-date').value,
+                category: document.getElementById('expense-category').value,
+                description: document.getElementById('expense-description').value,
+                amount: parseFloat(document.getElementById('expense-amount').value),
+                payment_method: document.getElementById('expense-payment').value,
+                notes: document.getElementById('expense-notes').value
+            };
+
+            const result = await api(expenseData);
+
+            if (result.success) {
+                alert('Expense added successfully!');
+                closeExpenseModal();
+                loadExpenses();
+                loadDashboard();
+            } else {
+                alert('Error adding expense');
+            }
+        });
+
+        async function loadExpenses() {
+            const result = await api({ action: "getExpenses" });
+            if (result.success) {
+                displayExpenses(result.data);
+            }
+        }
+
+        function displayExpenses(expenses) {
+            const tbody = document.querySelector('#expenses-table tbody');
+            tbody.innerHTML = expenses.map(e => `
+                <tr>
+                    <td>${e.date}</td>
+                    <td>${e.category}</td>
+                    <td>${e.description}</td>
+                    <td>₹${e.amount ? e.amount.toFixed(2) : '0.00'}</td>
+                    <td>${e.payment_method}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="deleteExpense('${e.id}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function deleteExpense(id) {
+            if (!confirm('Are you sure you want to delete this expense?')) return;
+            
+            const result = await api({
+                action: "deleteExpense",
+                id: id
+            });
+
+            if (result.success) {
+                alert('Expense deleted successfully!');
+                loadExpenses();
+                loadDashboard();
+            } else {
+                alert('Error deleting expense');
+            }
+        }
+
+        // ==================== REPORT FUNCTIONS ====================
+
+        function switchReportTab(tab) {
+            document.querySelectorAll('#reports-section .tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('#reports-section .tab-content').forEach(c => c.classList.remove('active'));
+            
+            const tabs = document.querySelectorAll('#reports-section .tab');
+            const contents = document.querySelectorAll('#reports-section .tab-content');
+            
+            switch(tab) {
+                case 'daily':
+                    tabs[0].classList.add('active');
+                    contents[0].classList.add('active');
+                    loadDailyReport();
+                    break;
+                case 'monthly':
+                    tabs[1].classList.add('active');
+                    contents[1].classList.add('active');
+                    loadMonthlyReport();
+                    break;
+                case 'yearly':
+                    tabs[2].classList.add('active');
+                    contents[2].classList.add('active');
+                    loadYearlyReport();
+                    break;
+                case 'custom':
+                    tabs[3].classList.add('active');
+                    contents[3].classList.add('active');
+                    break;
+            }
+        }
+
+        async function loadDailyReport() {
+            const data = await api({ action: "getDailySales", days: 7 });
+            if (data.success) {
+                const ctx = document.getElementById('dailyChart').getContext('2d');
+                if (charts.daily) charts.daily.destroy();
+                
+                charts.daily = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.data.map(d => d.date),
+                        datasets: [{
+                            label: 'Daily Sales (₹)',
+                            data: data.data.map(d => d.amount),
+                            backgroundColor: '#1a237e'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '₹' + value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        async function loadMonthlyReport() {
+            const data = await api({ action: "getSalesAnalytics", period: "month" });
+            if (data.success) {
+                const ctx = document.getElementById('monthlyChart').getContext('2d');
+                if (charts.monthly) charts.monthly.destroy();
+                
+                charts.monthly = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.data.map(d => d.date),
+                        datasets: [{
+                            label: 'Monthly Sales (₹)',
+                            data: data.data.map(d => d.amount),
+                            borderColor: '#1a237e',
+                            backgroundColor: 'rgba(26, 35, 126, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '₹' + value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        async function loadYearlyReport() {
+            const data = await api({ action: "getSalesAnalytics", period: "year" });
+            if (data.success) {
+                const ctx = document.getElementById('yearlyChart').getContext('2d');
+                if (charts.yearly) charts.yearly.destroy();
+                
+                charts.yearly = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.data.map(d => d.date),
+                        datasets: [{
+                            label: 'Yearly Sales (₹)',
+                            data: data.data.map(d => d.amount),
+                            backgroundColor: '#1a237e'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '₹' + value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        async function generateCustomReport() {
+            const startDate = document.getElementById('report-start').value;
+            const endDate = document.getElementById('report-end').value;
+
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates');
+                return;
+            }
+
+            const data = await api({ 
+                action: "getBills", 
+                startDate: startDate, 
+                endDate: endDate 
+            });
+
+            if (data.success) {
+                // Aggregate sales by date
+                const salesByDate = {};
+                data.data.forEach(bill => {
+                    const date = bill.date.split('T')[0];
+                    if (!salesByDate[date]) salesByDate[date] = 0;
+                    salesByDate[date] += bill.total;
+                });
+
+                const dates = Object.keys(salesByDate).sort();
+                const amounts = dates.map(d => salesByDate[d]);
+
+                const ctx = document.getElementById('customChart').getContext('2d');
+                if (charts.custom) charts.custom.destroy();
+                
+                charts.custom = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: 'Sales (₹)',
+                            data: amounts,
+                            borderColor: '#1a237e',
+                            backgroundColor: 'rgba(26, 35, 126, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '₹' + value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // ==================== SETTINGS FUNCTIONS ====================
+
+        async function loadSettings() {
+            const result = await api({ action: "getSettings" });
+            if (result.success) {
+                result.data.forEach(setting => {
+                    const element = document.getElementById(setting.key);
+                    if (element) {
+                        element.value = setting.value;
+                    }
+                });
+            }
+        }
+
+        async function saveSettings() {
+            const settings = [];
+            const form = document.getElementById('settings-form');
+            const inputs = form.querySelectorAll('input, textarea');
+
+            inputs.forEach(input => {
+                settings.push({
+                    key: input.id,
+                    value: input.value
+                });
+            });
+
+            const result = await api({
+                action: "updateSettings",
+                settings: settings
+            });
+
+            if (result.success) {
+                alert('Settings saved successfully!');
+            } else {
+                alert('Error saving settings');
+            }
+        }
+
+        // ==================== BILL PRINT FUNCTIONS ====================
+
+        function showBillPrint(bill) {
+            currentBill = bill;
+            
+            // Get shop settings from form or use defaults
+            const settings = {
+                shop_name: document.getElementById('shop_name')?.value || 'My Shop',
+                shop_address: document.getElementById('shop_address')?.value || '',
+                shop_phone: document.getElementById('shop_phone')?.value || '',
+                shop_email: document.getElementById('shop_email')?.value || '',
+                shop_gst: document.getElementById('shop_gst')?.value || ''
+            };
+            
+            const itemsHtml = bill.items.map(item => `
+                <tr>
+                    <td style="padding:8px; border:1px solid #ddd; text-align:left;">${item.name}</td>
+                    <td style="padding:8px; border:1px solid #ddd; text-align:center;">${item.qty}</td>
+                    <td style="padding:8px; border:1px solid #ddd; text-align:right;">₹${item.price.toFixed(2)}</td>
+                    <td style="padding:8px; border:1px solid #ddd; text-align:right;">₹${(item.price * item.qty).toFixed(2)}</td>
+                </tr>
+            `).join('');
+
+            const printContent = `
+                <div class="bill-print">
+                    <div class="bill-header">
+                        <h2>${settings.shop_name}</h2>
+                        <p>${settings.shop_address}</p>
+                        <p>Phone: ${settings.shop_phone} | Email: ${settings.shop_email}</p>
+                        <p>GST: ${settings.shop_gst}</p>
+                    </div>
+                    
+                    <h3 style="text-align:center; margin:15px 0;">TAX INVOICE</h3>
+                    
+                    <div class="bill-details">
+                        <div>
+                            <p><strong>Bill No:</strong> ${bill.bill_number}</p>
+                            <p><strong>Date:</strong> ${new Date(bill.date).toLocaleString()}</p>
+                        </div>
+                        <div>
+                            <p><strong>Customer:</strong> ${bill.customer_name}</p>
+                            <p><strong>Phone:</strong> ${bill.customer_phone || 'N/A'}</p>
+                            ${bill.customer_gst ? `<p><strong>GST:</strong> ${bill.customer_gst}</p>` : ''}
+                        </div>
+                    </div>
+                    
+                    <table class="bill-table">
+                        <thead>
+                            <tr>
+                                <th style="padding:8px; border:1px solid #ddd; text-align:left;">Item</th>
+                                <th style="padding:8px; border:1px solid #ddd; text-align:center;">Qty</th>
+                                <th style="padding:8px; border:1px solid #ddd; text-align:right;">Price</th>
+                                <th style="padding:8px; border:1px solid #ddd; text-align:right;">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${itemsHtml}
+                        </tbody>
+                    </table>
+                    
+                    <div class="bill-summary">
+                        <p><strong>Subtotal:</strong> ₹${bill.subtotal ? bill.subtotal.toFixed(2) : '0.00'}</p>
+                        <p><strong>GST:</strong> ₹${bill.gst_total ? bill.gst_total.toFixed(2) : '0.00'}</p>
+                        <p><strong>Discount:</strong> ₹${bill.discount ? bill.discount.toFixed(2) : '0.00'}</p>
+                        <h3 style="margin:10px 0; color:#1a237e;">Total: ₹${bill.total ? bill.total.toFixed(2) : '0.00'}</h3>
+                        <p><strong>Payment Method:</strong> ${bill.payment_method}</p>
+                    </div>
+                    
+                    <div class="bill-footer">
+                        <p>Thank you for your business!</p>
+                        <p style="margin-top:5px;">*** This is a computer generated invoice ***</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('bill-print-content').innerHTML = printContent;
+            document.getElementById('bill-print-modal').style.display = 'block';
+        }
+
+        function printBill() {
+            window.print();
+        }
+
+        function closeBillPrint() {
+            document.getElementById('bill-print-modal').style.display = 'none';
+        }
+
+        // ==================== INITIALIZATION ====================
+
+        // Load initial data
+        loadDashboard();
+        loadProducts();
+
+        // Set today's date for expense modal
+        document.getElementById('expense-date').value = new Date().toISOString().split('T')[0];
+
+        // Set default dates for reports
+        const today = new Date();
+        const sevenDaysAgo = new Date(today);
+        sevenDaysAgo.setDate(today.getDate() - 7);
+        
+        document.getElementById('report-start').value = sevenDaysAgo.toISOString().split('T')[0];
+        document.getElementById('report-end').value = today.toISOString().split('T')[0];
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Add resize handler for charts
+        window.addEventListener('resize', function() {
+            Object.values(charts).forEach(chart => {
+                if (chart) chart.resize();
+            });
+        });
+    </script>
+</body>
+</html>
